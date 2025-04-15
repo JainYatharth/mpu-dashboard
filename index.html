@@ -84,13 +84,24 @@
     // Listen to changes in the Firebase database for gyro and accel data
     db.ref("mpu9250/gyro").on("value", snapshot => {
       const gyroData = snapshot.val();
-      updateUI(gyroData, "gyro");
+      console.log("Gyro Data:", gyroData); // Add this line to debug
+      if (gyroData) {
+        updateUI(gyroData, "gyro");
+      } else {
+        document.getElementById("gyro").innerHTML = "<span class='error'>No gyro data available</span>";
+      }
     });
 
-    db.ref("mpu9250/accel").on("value", snapshot => {
-      const accelData = snapshot.val();
+  db.ref("mpu9250/accel").on("value", snapshot => {
+    const accelData = snapshot.val();
+    console.log("Accel Data:", accelData); // Add this line to debug
+    if (accelData) {
       updateUI(accelData, "accel");
-    });
+    } else {
+      document.getElementById("accel").innerHTML = "<span class='error'>No accelerometer data available</span>";
+    }
+  });
+
   </script>
 </body>
 </html>
