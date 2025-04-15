@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MPU9250 Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+</head>
+<body>
+  <h2>MPU9250 Live Data (Firebase)</h2>
+  <div id="gyro">Loading gyro data...</div>
+  <div id="accel">Loading accel data...</div>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZsMiDagVrqPcDqqeaMvBGcWpdGsOpOx8",
+      authDomain: "mpuiot.firebaseapp.com",
+      databaseURL: "https://mpuiot-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mpuiot",
+      storageBucket: "mpuiot.firebasestorage.app",
+      messagingSenderId: "889329363432",
+      appId: "1:889329363432:web:798575000407a436b11c5d"
+    };
+
+    // Init
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function updateUI(data, id) {
+      document.getElementById(id).innerHTML = `
+        X: ${data.x.toFixed(2)}<br>
+        Y: ${data.y.toFixed(2)}<br>
+        Z: ${data.z.toFixed(2)}
+      `;
+    }
+
+    db.ref("mpu9250/gyro").on("value", snapshot => {
+      updateUI(snapshot.val(), "gyro");
+    });
+
+    db.ref("mpu9250/accel").on("value", snapshot => {
+      updateUI(snapshot.val(), "accel");
+    });
+  </script>
+</body>
+</html>
