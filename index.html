@@ -1,14 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MPU9250 Dashboard</title>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    h2 {
+      color: #333;
+    }
+    .sensor-data {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    .sensor-data h3 {
+      color: #007bff;
+    }
+    .sensor-data p {
+      font-size: 1.2em;
+      color: #555;
+    }
+    .loading {
+      color: #888;
+      font-size: 1.2em;
+    }
+  </style>
 </head>
 <body>
   <h2>MPU9250 Live Data (Firebase)</h2>
-  <div id="gyro">Loading gyro data...</div>
-  <div id="accel">Loading accel data...</div>
+  <div class="sensor-data">
+    <h3>Gyroscope Data</h3>
+    <div id="gyro" class="loading">Loading gyro data...</div>
+  </div>
+  <div class="sensor-data">
+    <h3>Accelerometer Data</h3>
+    <div id="accel" class="loading">Loading accel data...</div>
+  </div>
 
   <script>
     // Firebase config
@@ -22,24 +64,32 @@
       appId: "1:889329363432:web:798575000407a436b11c5d"
     };
 
-    // Init
+    // Init Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Function to update the UI
     function updateUI(data, id) {
-      document.getElementById(id).innerHTML = `
-        X: ${data.x.toFixed(2)}<br>
-        Y: ${data.y.toFixed(2)}<br>
-        Z: ${data.z.toFixed(2)}
-      `;
+      if (data) {
+        document.getElementById(id).innerHTML = `
+          X: ${data.x.toFixed(2)}°/s<br>
+          Y: ${data.y.toFixed(2)}°/s<br>
+          Z: ${data.z.toFixed(2)}°/s
+        `;
+      } else {
+        document.getElementById(id).innerHTML = `<span class="error">Error: Data not available.</span>`;
+      }
     }
 
+    // Listen to changes in the Firebase database for gyro and accel data
     db.ref("mpu9250/gyro").on("value", snapshot => {
-      updateUI(snapshot.val(), "gyro");
+      const gyroData = snapshot.val();
+      updateUI(gyroData, "gyro");
     });
 
     db.ref("mpu9250/accel").on("value", snapshot => {
-      updateUI(snapshot.val(), "accel");
+      const accelData = snapshot.val();
+      updateUI(accelData, "accel");
     });
   </script>
 </body>
